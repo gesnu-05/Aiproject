@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Blog & Content Writer</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
+        input, select, button { padding: 10px; margin: 5px; width: 80%; }
+        textarea { width: 80%; height: 300px; border: 1px solid #ccc; padding: 10px; }
+    </style>
+</head>
+<body>
+
+    <h1>AI Blog & Content Writer</h1>
+    <input type="text" id="topic" placeholder="Enter a topic (e.g., AI in marketing)">
+    <select id="style">
+        <option value="professional">Professional</option>
+        <option value="casual">Casual</option>
+        <option value="technical">Technical</option>
+        <option value="storytelling">Storytelling</option>
+    </select>
+    <button onclick="generateContent()">Generate Content</button>
+
+    <h2>Generated Content:</h2>
+    <textarea id="output" readonly></textarea>
+
+    <script>
+        async function generateContent() {
+            const topic = document.getElementById("topic").value;
+            const style = document.getElementById("style").value;
+            const outputArea = document.getElementById("output");
+
+            if (!topic || !style) {
+                outputArea.value = "Please enter a topic and select a style.";
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("topic", topic);
+            formData.append("style", style);
+
+            try {
+                const response = await fetch("/generate", {
+                    method: "POST",
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const err = await response.json();
+                    outputArea.value = `Error: ${err.detail}`;
+                    return;
+                }
+
+                const data = await response.json();
+                outputArea.value = data.content;
+            } catch (error) {
+                outputArea.value = "Error: Could not connect to server.";
+            }
+        }
+    </script>
+
+</body>
+</html>
